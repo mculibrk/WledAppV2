@@ -46,6 +46,7 @@ jobs:
       
       - name: Clean Android Build
         run: |
+          npm uninstall @react-native-community/masked-view
           cd android
           ./gradlew clean
           cd ..
