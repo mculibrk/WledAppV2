@@ -9,8 +9,10 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
+  "__dependencies": {
+    "@react-native-community/masked-view": "^0.1.11"
+  },
   "dependencies": {
-    "@react-native-community/masked-view": "^0.1.11",
     "@react-native-community/slider": "^4.4.0",
     "@react-native-masked-view/masked-view": "^0.2.8",
     "@react-navigation/native": "^6.1.1",
