@@ -32,6 +32,9 @@ jobs:
       - name: Make Gradle executable
         run: chmod +x ./android/gradlew
 
+      - name: Create assets directory
+        run: mkdir -p android/app/src/main/assets
+
       - name: Bundle JS assets
         run: |
           npx react-native bundle \
