@@ -35,14 +35,18 @@ jobs:
       - name: Create assets directory
         run: mkdir -p android/app/src/main/assets
 
-      - name: Bundle JS without duplicating assets
+      - name: Bundle JS assets
         run: |
           npx react-native bundle \
             --platform android \
             --dev false \
             --entry-file index.js \
             --bundle-output android/app/src/main/assets/index.android.bundle \
-            --no-assets
+            --assets-dest android/app/src/main/res
+
+      - name: 🧹 Remove duplicate assets
+        run: |
+          rm -rf android/app/src/main/res/drawable-*/node_modules_*
 
       - name: Build Release APK
         run: |
