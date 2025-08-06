@@ -1,64 +1,56 @@
-name: Build Android APK
+name: Android Build
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
-    name: Build APK
+    name: Build Android APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '18'
 
-      - name: Set up Java and Android SDK
-        uses: android-actions/setup-android@v2
-
-      - name: Cache node modules
-        uses: actions/cache@v3
+      - name: Cache node_modules
+        uses: actions/cache@v4
         with:
           path: |
             node_modules
             android/.gradle
-            ~/.gradle
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
-      - name: Install dependencies
-        run: yarn install
+      - name: Install Node Dependencies
+        run: npm ci
 
-      - name: Remove deprecated masked-view
-        run: yarn remove @react-native-community/masked-view
+      - name: Setup Java (for Gradle)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Create required assets directory
-        run: mkdir -p android/app/src/main/assets
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Bundle JS for Android
-        run: |
-          npx react-native bundle \
-            --platform android \
-            --dev false \
-            --entry-file index.js \
-            --bundle-output android/app/src/main/assets/index.android.bundle \
-            --assets-dest android/app/src/main/res
-
-      - name: Clean Android build
+      - name: Clean Gradle
         run: cd android && ./gradlew clean
 
-      - name: Build release APK
+      - name: Build APK
         run: cd android && ./gradlew assembleRelease
 
-      - name: Upload APK artifact
+      - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release.apk
